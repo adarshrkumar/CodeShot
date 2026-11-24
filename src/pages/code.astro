@@ -1,53 +1,57 @@
 ---
-import { createMarkdownProcessor } from '@astrojs/markdown-remark'
+import { Code as AstroCode } from 'astro:components'
+import type { ComponentProps } from 'astro/types'
+import { bundledLanguagesInfo } from 'shiki/langs'
 
 import Code from '../components/Code.astro'
 import '../styles/globals.scss'
 
 const title = 'CodeShot'
-const code = `{
-    "Design Softwares": [
-        "Canva",
-        "OnShape",
-        "Figma"
-    ],
-    "IDEs / Agents": [
-        "VS Code",
-        "Claude Code",
-        "Cursor",
-        "Antigravity"
-    ],
-    "Other Tools": [
-        "GitHub",
-        "Firebase",
-        "Google Cloud",
-        "GitHub Actions",
-        "Vercel"
-    ],
-    "Web Development - Front-End": [
-        "HTML",
-        "SCSS",
-        "TypeScript",
-        "SVG"
-    ],
-    "Web Development - Back End": [
-        "Astro",
-        "Node.js",
-        "Express.js",
-        "PHP",
-        "Discord.js",
-        "Next.js"
-    ],
-    "Other Languages": [
-        "Python",
-        "RegEx",
-        "Flask",
-        "Bash",
-        "C++"
-    ]
-}`
-const markdown = await createMarkdownProcessor()
-const highlightedCode = (await markdown.render(`\`\`\`json\n${code}\n\`\`\``)).code
+const defaultCode = `
+┌──────────────────────────────────────────┐
+│                                          │
+│   C O D E S H O T                        │
+│   ────────────────────────────────────   │
+│                                          │
+│      ┌─────┐     ┌────────────────┐      │
+│      │ </> │ ──▶ │  render(code)  │      │
+│      └─────┘     │    CodeShot    │      │
+│                  └────────────────┘      │
+│                                          │
+│   CODE IN.  CLEAN OUTPUT.                │
+│   From raw code to a polished shot.      │
+│                                          │
+│   > Syntax highlighted by Astro          │
+│   > Line numbered by CodeShot            │
+│   > Loaded from code or a raw file URL   │
+│                                          │
+│   Example:                               │
+│   /code?url=https://akum.site/example-ts │
+│                                          │
+└──────────────────────────────────────────┘
+`.trim()
+
+const params = new URL(Astro.request.url).searchParams
+const hasCode = params.has('code')
+const hasUrl = params.has('url')
+let sourceUrl: URL | undefined
+let code = defaultCode
+let error = ''
+
+if (hasCode && hasUrl) error = 'Provide either "code" or "url", not both.'
+else if (hasUrl) {
+    sourceUrl = new URL(params.get('url')!)
+    const response = await fetch(sourceUrl)
+    if (!response.ok) throw new Error(`File request failed with status ${response.status}.`)
+    code = await response.text()
+} else if (hasCode) code = params.get('code')!
+
+const lang = bundledLanguagesInfo.find(
+    (language): language is typeof bundledLanguagesInfo[number] & {
+        id: Extract<NonNullable<ComponentProps<typeof AstroCode>['lang']>, string>;
+    } => [language.id, ...(language.aliases ?? [])].includes(params.get('lang') ?? sourceUrl?.pathname.match(/\.([a-zA-Z0-9_+-]+)$/)?.[1] ?? '')
+)?.id ?? 'text'
+
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -78,7 +82,7 @@ const highlightedCode = (await markdown.render(`\`\`\`json\n${code}\n\`\`\``)).c
     </head>
     <body>
         <main class="content">
-            <Code><Fragment set:html={highlightedCode} /></Code>
+            <Code><AstroCode code={error || code} lang={error ? 'text' : lang} /></Code>
         </main>
     </body>
 </html>
