@@ -1,0 +1,74 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Read|Edit|NotebookEdit|Agent|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ~/.claude/hooks/index.js",
+            "timeout": 20
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ~/.claude/hooks/check-empty-agents-dir.js",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/on-stop.sh",
+            "timeout": 60
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__query-docs",
+      "mcp__vercel__list_teams",
+      "mcp__vercel__list_projects",
+      "mcp__vercel__get_project",
+      "mcp__vercel__list_deployments",
+      "mcp__vercel__get_deployment",
+      "mcp__vercel__get_deployment_build_logs",
+      "mcp__vercel__get_runtime_logs",
+      "mcp__vercel__web_fetch_vercel_url",
+      "mcp__ide__getDiagnostics",
+      "Bash(npx vercel:*)",
+      "Bash(vercel project:*)",
+      "Bash(vercel env:*)",
+      "Bash(npx drizzle-kit:*)",
+      "Bash(nvm use)",
+      "Bash(npm run check)",
+      "Bash(npm install:*)",
+      "Bash(npm uninstall:*)"
+    ],
+    "deny": [
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(* git add *)",
+      "Bash(* git commit *)",
+      "Bash(npm run check 2>&1 | *)",
+      "Bash(* npm run check 2>&1 | *)"
+    ],
+    "ask": [
+      "Edit(eslint/**/*.js)",
+      "Edit(eslint*js)"
+    ]
+  }
+}
