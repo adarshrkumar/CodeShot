@@ -1,0 +1,54 @@
+@use '../variables/globals.scss' as *;
+@use 'sass:color';
+
+.code-block {
+    padding: $content-spacing;
+    border-radius: $border-radius-section;
+    white-space: unset;
+    isolation: isolate;
+
+    .code-line {
+        display: flex;
+        gap: #{$content-spacing * 2};
+
+        .line-number {
+            position: relative;
+            min-width: calc(var(--last-line-number-length) * 1ch);
+            text-align: right;
+
+            &::after {
+                $bg: #24292e;
+
+                content: '';
+                position: absolute;
+                inset: 0 #{-1 * $content-spacing} 0 0;
+                border-right: solid 1px $background-color;
+                z-index: -1;
+            }
+        }
+
+        &:first-child .line-number::after {
+            top: #{-1 * $content-spacing};
+        }
+        &:last-child .line-number::after {
+            bottom: #{-1 * $content-spacing};
+        }
+
+        .line {
+            white-space: pre-wrap;
+
+            a {
+                color: inherit;
+
+                &:not(:hover, :focus-visible) {
+                    text-decoration: none;
+                }
+            }
+
+            .code-icon {
+                height: 1em;
+                vertical-align: middle;
+            }
+        }
+    }
+}

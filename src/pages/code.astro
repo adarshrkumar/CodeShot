@@ -1,0 +1,84 @@
+---
+import { createMarkdownProcessor } from '@astrojs/markdown-remark'
+
+import Code from '../components/Code.astro'
+import '../styles/globals.scss'
+
+const title = 'CodeShot'
+const code = `{
+    "Design Softwares": [
+        "Canva",
+        "OnShape",
+        "Figma"
+    ],
+    "IDEs / Agents": [
+        "VS Code",
+        "Claude Code",
+        "Cursor",
+        "Antigravity"
+    ],
+    "Other Tools": [
+        "GitHub",
+        "Firebase",
+        "Google Cloud",
+        "GitHub Actions",
+        "Vercel"
+    ],
+    "Web Development - Front-End": [
+        "HTML",
+        "SCSS",
+        "TypeScript",
+        "SVG"
+    ],
+    "Web Development - Back End": [
+        "Astro",
+        "Node.js",
+        "Express.js",
+        "PHP",
+        "Discord.js",
+        "Next.js"
+    ],
+    "Other Languages": [
+        "Python",
+        "RegEx",
+        "Flask",
+        "Bash",
+        "C++"
+    ]
+}`
+const markdown = await createMarkdownProcessor()
+const highlightedCode = (await markdown.render(`\`\`\`json\n${code}\n\`\`\``)).code
+---
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="$waiting_on_description" />
+        <meta name="keywords" content="$waiting_on_keywords" />
+        <title>{title}</title>
+
+        <!-- Open Graph / Facebook -->
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={Astro.url} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content="$waiting_on_og_description" />
+        <meta property="og:image" content={`${Astro.site}${'$waiting_on_og_image'}`} />
+        <meta property="og:site_name" content={title} />
+
+        <!-- Twitter -->
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:url" content={Astro.url} />
+        <meta property="twitter:title" content={title} />
+        <meta property="twitter:description" content="$waiting_on_twitter_description" />
+        <meta property="twitter:image" content={`${Astro.site}${'$waiting_on_twitter_image'}`} />
+
+        <link rel="icon" href="/assets/favicon.png" />
+    </head>
+    <body>
+        <main class="content">
+            <Code><Fragment set:html={highlightedCode} /></Code>
+        </main>
+    </body>
+</html>
